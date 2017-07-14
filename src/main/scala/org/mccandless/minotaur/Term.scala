@@ -3,14 +3,35 @@ package org.mccandless.minotaur
 import org.pmw.tinylog.Logger
 
 /**
+  * A term in lambda calculus is one of:
+  *   - variable introduction
+  *   - function abstraction (lambda)
+  *   - function application
+  *
   * Created by tomas.mccandless on 7/13/17.
   */
 sealed trait Term {
 
   /** @return the set of free variables in this term. */
-  def freeVars: Set[Var]
+  final def freeVars: Set[Var] = this match {
+    case v: Var => Set(v)
+    case Lambda(arg, body) => body.freeVars - arg
+    case Apply(t1, t2) => t1.freeVars union t2.freeVars
+  }
 
-  def replace(old: Var, newTerm: Term): Term
+  /**
+    * Variable substitution.
+    *
+    * @param old
+    * @param newTerm
+    * @return
+    */
+  final def replace(old: Var, newTerm: Term): Term = this match {
+    case v: Var if v == old => newTerm
+    case Lambda(arg, body) if arg != old && !newTerm.freeVars.contains(arg) => Lambda(arg, body.replace(old, newTerm))
+    case Apply(t1, t2) => Apply(t1.replace(old, newTerm), t2.replace(old, newTerm))
+    case _ => this
+  }
 
   /**
     * A Term with no free variables is said to be closed (ie, a combinator)
@@ -29,13 +50,6 @@ sealed trait Term {
   */
 case class Var(name: String) extends Term with Ordered[Var] {
 
-  override def freeVars: Set[Var] = Set(this)
-
-  override def replace(old: Var, newTerm: Term): Term = {
-    if (this == old) newTerm
-    else this
-  }
-
   /** @return a fresh variable */
   // TODO more robust increments, this just appends a '
   def next: Var = Var(s"$name'")
@@ -52,13 +66,6 @@ case class Var(name: String) extends Term with Ordered[Var] {
 // An occurrence of the variable arg is said to be bound when it occurs in the body body of an abstraction λ arg.body
 // An occurrence of arg is free if it appears in a position where it is not bound by an enclosing abstraction on arg
 case class Lambda(arg: Var, body: Term) extends Term {
-
-  override def freeVars: Set[Var] = this.body.freeVars - arg
-
-  override def replace(old: Var, newTerm: Term): Lambda = {
-    if (this.arg != old && !newTerm.freeVars.contains(this.arg)) Lambda(this.arg, this.body.replace(old, newTerm))
-    else this
-  }
 
   /**
     * Variable renaming to avoid capture.
@@ -86,10 +93,6 @@ case class Lambda(arg: Var, body: Term) extends Term {
   */
 // TODO should t1 be a lambda?
 case class Apply(t1: Term, t2: Term) extends Term {
-
-  override def freeVars: Set[Var] = t1.freeVars union t2.freeVars
-
-  override def replace(old: Var, newTerm: Term): Term = Apply(t1.replace(old, newTerm), t2.replace(old, newTerm))
 
   /**
     * Beta reduction. A single step of evaluation.
