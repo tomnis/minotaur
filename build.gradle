@@ -1,0 +1,22 @@
+plugins {
+    id 'scala'
+}
+
+project.ext.versions = [
+    junit: '4.12',
+    scalalang: '2.12.2',
+    scalatest: '3.0.3',
+    tinylog: '1.2'
+]
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "junit:junit:${versions.junit}"
+    compile "org.scala-lang:scala-library:${versions.scalalang}"
+    compile "org.scala-lang:scala-compiler:${versions.scalalang}"
+    compile "org.scalatest:scalatest_2.12:${versions.scalatest}"
+    compile group: 'org.tinylog', name: 'tinylog', version: versions.tinylog
+}
