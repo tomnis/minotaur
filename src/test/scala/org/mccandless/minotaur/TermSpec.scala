@@ -2,6 +2,7 @@ package org.mccandless.minotaur
 
 import Constants._
 import org.junit.{Ignore, Test}
+import org.pmw.tinylog.Logger
 import org.scalatest.Matchers
 import org.scalatest.junit.JUnitSuite
 
@@ -72,5 +73,11 @@ class TermSpec extends JUnitSuite with Matchers {
     // check lambda replacing
     id.replace(x, id) should be (id)
     id.replace(x, y) should be (id)
+  }
+
+
+  @Test
+  def termToString(): Unit = {
+    id.toString should be ("λx.x")
   }
 }

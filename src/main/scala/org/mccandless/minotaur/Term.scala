@@ -2,6 +2,8 @@ package org.mccandless.minotaur
 
 import org.pmw.tinylog.Logger
 
+import scala.util.{Failure, Success, Try}
+
 /**
   * A term in lambda calculus is one of:
   *   - variable introduction
@@ -13,6 +15,7 @@ import org.pmw.tinylog.Logger
 sealed trait Term {
 
   /** @return the set of free variables in this term. */
+  // TODO make tailrec
   final def freeVars: Set[Var] = this match {
     case v: Var => Set(v)
     case Lambda(arg, body) => body.freeVars - arg
@@ -28,7 +31,11 @@ sealed trait Term {
     */
   final def replace(old: Var, newTerm: Term): Term = this match {
     case v: Var if v == old => newTerm
-    case Lambda(arg, body) if arg != old && !newTerm.freeVars.contains(arg) => Lambda(arg, body.replace(old, newTerm))
+    case Lambda(arg, body) if arg != old =>
+      if (!newTerm.freeVars.contains(arg)) Lambda(arg, body.replace(old, newTerm))
+      else {
+        freshVar = body.freeVars.x
+      }
     case Apply(t1, t2) => Apply(t1.replace(old, newTerm), t2.replace(old, newTerm))
     case _ => this
   }
@@ -39,6 +46,30 @@ sealed trait Term {
     * @return true iff there are no free variables in this term.
     */
   final def isClosed: Boolean = this.freeVars.isEmpty
+
+
+  /** @return a fresh variable for this term. */
+  // TODO more robust increments, this just appends a '
+  final def freshVar: Var = this match {
+    case Var(name) => Var(s"$name'")
+    case Lambda(arg, body) => body.freeVars.max.freshVar
+    case Apply(t1, t2) => t1.freeVars.union(t2.freeVars).max.freshVar
+  }
+
+  override def toString: String = this match {
+    case Var(name) => name
+    case Lambda(arg, body) => s"λ$arg.$body"
+    case Apply(t1, t2) => s"($t1 $t2)"
+  }
+
+
+  /**
+    * Checks for equivalence up to variable renaming.
+    *
+    * @param that
+    * @return
+    */
+  final def isAlphaEquivalentTo(that: Term): Boolean = ???
 }
 
 
@@ -49,10 +80,6 @@ sealed trait Term {
   * @param name
   */
 case class Var(name: String) extends Term with Ordered[Var] {
-
-  /** @return a fresh variable */
-  // TODO more robust increments, this just appends a '
-  def next: Var = Var(s"$name'")
 
   override def compare(that: Var): Int = this.name compareTo that.name
 }
@@ -74,13 +101,21 @@ case class Lambda(arg: Var, body: Term) extends Term {
     */
   // TODO should we move this to the base trait?
   def alpha: Lambda = {
-    val nextFreeVar: Var = this.body.freeVars.max.next
-
-    if (body.freeVars contains nextFreeVar) {
-      throw new RuntimeException(s"we expect $nextFreeVar to be free in $body")
-    }
-
+    val nextFreeVar: Var = this.freshVar
+    require(!body.freeVars.contains(nextFreeVar))
     Lambda(nextFreeVar, this.body.replace(this.arg, nextFreeVar))
+  }
+
+
+  /**
+    * An eta-conversion
+    * @return
+    */
+  def eta: Try[Term] = {
+    this.body match {
+      case Apply(t1, t2) if t2 == this.arg && !t1.freeVars.contains(this.arg) => Success(t1)
+      case _ => Failure(new RuntimeException("eta reduction not possible for $this"))
+    }
   }
 }
 
@@ -108,6 +143,3 @@ case class Apply(t1: Term, t2: Term) extends Term {
       this
   }
 }
-
-
-
