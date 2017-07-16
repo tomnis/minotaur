@@ -1,6 +1,6 @@
 package org.mccandless.minotaur
 
-import Constants._
+import Combinators._
 import org.junit.{Ignore, Test}
 import org.pmw.tinylog.Logger
 import org.scalatest.Matchers

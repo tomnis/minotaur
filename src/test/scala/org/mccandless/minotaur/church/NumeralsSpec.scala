@@ -1,6 +1,6 @@
 package org.mccandless.minotaur.church
 
-import org.junit.Test
+import org.junit.{Ignore, Test}
 import org.mccandless.minotaur.Apply
 import org.mccandless.minotaur.church.Numerals._
 import org.scalatest.Matchers
@@ -13,12 +13,14 @@ class NumeralsSpec extends JUnitSuite with Matchers {
 
 
   @Test
+  @Ignore
   def succSpec(): Unit = {
 
     Apply(succ, zero).beta should be (one)
   }
 
   @Test
+  @Ignore
   def add(): Unit = {
 
     Numerals.+(zero, one) should be (one)

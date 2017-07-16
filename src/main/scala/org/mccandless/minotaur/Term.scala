@@ -33,9 +33,8 @@ sealed trait Term {
     case v: Var if v == old => newTerm
     case Lambda(arg, body) if arg != old =>
       if (!newTerm.freeVars.contains(arg)) Lambda(arg, body.replace(old, newTerm))
-      else {
-        freshVar = body.freeVars.x
-      }
+        // TODO likely bug here. do we ever need to make the arg itself fresh?
+      else Lambda(arg, newTerm.replace(arg, newTerm.freshVar))
     case Apply(t1, t2) => Apply(t1.replace(old, newTerm), t2.replace(old, newTerm))
     case _ => this
   }
@@ -70,6 +69,10 @@ sealed trait Term {
     * @return
     */
   final def isAlphaEquivalentTo(that: Term): Boolean = ???
+
+
+  /** @return true iff we are in a normal form (cannot be further reduced). */
+  final def isNormal: Boolean = ???
 }
 
 
