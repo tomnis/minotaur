@@ -73,6 +73,18 @@ sealed trait Term {
 
   /** @return true iff we are in a normal form (cannot be further reduced). */
   final def isNormal: Boolean = ???
+
+  final def reduce: Term = {
+    Logger.info(s"reducing $this")
+    this match {
+      case v: Var => v
+      case l: Lambda => l.eta match {
+        case Success(v: Term) => v.reduce
+        case Failure(exception) => l
+      }
+      case Apply(t1, t2) => Apply(t1.reduce, t2).beta.reduce
+    }
+  }
 }
 
 
@@ -117,7 +129,7 @@ case class Lambda(arg: Var, body: Term) extends Term {
   def eta: Try[Term] = {
     this.body match {
       case Apply(t1, t2) if t2 == this.arg && !t1.freeVars.contains(this.arg) => Success(t1)
-      case _ => Failure(new RuntimeException("eta reduction not possible for $this"))
+      case _ => Failure(new RuntimeException(s"eta reduction not possible for $this"))
     }
   }
 }
@@ -145,4 +157,7 @@ case class Apply(t1: Term, t2: Term) extends Term {
       Logger.error(s"we shouldn't be calling beta on $this")
       this
   }
+
+
+
 }

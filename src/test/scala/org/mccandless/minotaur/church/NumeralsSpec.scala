@@ -13,14 +13,12 @@ class NumeralsSpec extends JUnitSuite with Matchers {
 
 
   @Test
-  @Ignore
   def succSpec(): Unit = {
 
-    Apply(succ, zero).beta should be (one)
+    Apply(succ, zero).reduce should be (one)
   }
 
   @Test
-  @Ignore
   def add(): Unit = {
 
     Numerals.+(zero, one) should be (one)

@@ -14,7 +14,15 @@ object Numerals {
   val three: Lambda = Lambda(Var("x"), Lambda(Var("y"), Apply(Var("x"), Apply(Var("x"), Apply(Var("x"), Var("y"))))))
 
 
-  val succ: Lambda = Lambda(Var("n"), Lambda(Var("f"), Lambda(Var("x"), Apply(Apply(Apply(Var("n"), Var("f")), Var("x")), Var("f")) )))
+  val succ: Lambda = Lambda(Var("n"),
+    Lambda(Var("f"),
+      Lambda(Var("x"),
+        Apply(Var("f"),
+          Apply( Apply(Var("n"),Var("f")) , Var("x") )
+        )
+      )
+    )
+  )
 
 
   def +(num1: Term, num2: Term): Term = {
