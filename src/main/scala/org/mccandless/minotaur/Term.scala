@@ -114,6 +114,18 @@ sealed trait Term {
     if (this.isAlphaEquivalentTo(tPrime)) tPrime
     else tPrime.reduce
   }
+
+
+
+
+  final def inferType(context: Context): String = {
+    Logger.info(s"inferring type of $this")
+
+//    if (context.hasAssumptionFor(this)) context.getAssumption(this)
+//    else
+
+    ""
+  }
 }
 
 

@@ -2,10 +2,8 @@ package org.mccandless.minotaur
 
 import Combinators._
 import org.junit.{Ignore, Test}
-import org.pmw.tinylog.Logger
 import org.scalatest.Matchers
 import org.scalatest.junit.JUnitSuite
-import org.scalatest.words.ResultOfNotWordForAny
 
 /**
   * Created by tomas.mccandless on 7/13/17.

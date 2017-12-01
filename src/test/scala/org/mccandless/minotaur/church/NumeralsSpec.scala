@@ -1,6 +1,6 @@
 package org.mccandless.minotaur.church
 
-import org.junit.{Ignore, Test}
+import org.junit.Test
 import org.mccandless.minotaur.{Apply, TermMatchers}
 import org.mccandless.minotaur.church.Numerals._
 import org.scalatest.Matchers
@@ -26,7 +26,6 @@ class NumeralsSpec extends JUnitSuite with Matchers with TermMatchers {
 
     Numerals.plus(zero, one).reduce should beAlphaEquivalentTo (one)
     Numerals.plus(one, one).reduce should beAlphaEquivalentTo (two)
-//
     Numerals.plus(one, two).reduce should beAlphaEquivalentTo (three)
   }
 }
