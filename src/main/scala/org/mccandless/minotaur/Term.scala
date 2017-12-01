@@ -63,16 +63,37 @@ sealed trait Term {
 
 
   /**
+    * Converts to a [[DeBruijnTerm]] with De Bruijn indices as identifiers instead of raw strings.
+    *
+    * @return
+    */
+  final def toDeBruijn: DeBruijnTerm = {
+
+    def deBruijnHelper(env: List[String], term: Term): DeBruijnTerm = {
+      Logger.debug(s"converting $term to debruijn index, env = $env")
+      term match {
+        case v: Var => DeBruijnVar(env.indexOf(v.name))
+        case l: Lambda => DeBruijnLambda(deBruijnHelper(l.arg.name :: env, l.body))
+        case a: Apply => DeBruijnApply(deBruijnHelper(env, a.t1), deBruijnHelper(env, a.t2))
+      }
+    }
+
+    deBruijnHelper(List.empty, this)
+  }
+
+  /**
     * Checks for equivalence up to variable renaming.
     *
     * @param that
     * @return
     */
-  final def isAlphaEquivalentTo(that: Term): Boolean = ???
+  final def isAlphaEquivalentTo(that: Term): Boolean = {
+    this.toDeBruijn == that.toDeBruijn
+  }
 
 
   /** @return true iff we are in a normal form (cannot be further reduced). */
-  final def isNormal: Boolean = ???
+  final def isNormal: Boolean = this.reduce == this
 
   final def reduce: Term = {
     Logger.info(s"reducing $this")

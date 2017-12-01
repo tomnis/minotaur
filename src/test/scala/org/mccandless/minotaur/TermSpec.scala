@@ -5,11 +5,12 @@ import org.junit.{Ignore, Test}
 import org.pmw.tinylog.Logger
 import org.scalatest.Matchers
 import org.scalatest.junit.JUnitSuite
+import org.scalatest.words.ResultOfNotWordForAny
 
 /**
   * Created by tomas.mccandless on 7/13/17.
   */
-class TermSpec extends JUnitSuite with Matchers {
+class TermSpec extends JUnitSuite with Matchers with TermMatchers {
 
   val x = Var("x")
   val y = Var("y")
@@ -79,5 +80,13 @@ class TermSpec extends JUnitSuite with Matchers {
   @Test
   def termToString(): Unit = {
     id.toString should be ("λx.x")
+  }
+
+
+  @Test
+  def alphaEquivalence(): Unit = {
+    x should beAlphaEquivalentTo (x)
+    x should not beAlphaEquivalentTo y
+    Lambda(x, x).isAlphaEquivalentTo(Lambda(y, y)) should be (true)
   }
 }
