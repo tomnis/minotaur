@@ -103,20 +103,13 @@ sealed trait Term {
     * @return
     */
   final def reduce: Term = {
-
-
-    def reduceHelper(t: Term): Term = {
-      Logger.info(s"reducing $t")
-      t match {
-        case v: Var => v
-        case Lambda(arg, body) => Lambda(arg, body.reduce)
-        case Apply(t1: Lambda, t2: Term) => Apply(t1, t2.reduce).beta
-        case Apply(t1, t2) => Apply(t1.reduce, t2.reduce)
-      }
+    Logger.info(s"reducing $this")
+    val tPrime = this match {
+      case v: Var => v
+      case Lambda(arg, body) => Lambda(arg, body.reduce)
+      case Apply(t1: Lambda, t2: Term) => Apply(t1, t2.reduce).beta
+      case Apply(t1, t2) => Apply(t1.reduce, t2.reduce)
     }
-
-
-    val tPrime = reduceHelper(this)
 
     if (this.isAlphaEquivalentTo(tPrime)) tPrime
     else tPrime.reduce
