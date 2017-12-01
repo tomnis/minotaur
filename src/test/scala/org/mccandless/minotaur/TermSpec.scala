@@ -87,6 +87,8 @@ class TermSpec extends JUnitSuite with Matchers with TermMatchers {
   def alphaEquivalence(): Unit = {
     x should beAlphaEquivalentTo (x)
     x should not beAlphaEquivalentTo y
-    Lambda(x, x).isAlphaEquivalentTo(Lambda(y, y)) should be (true)
+    Lambda(x, x) should beAlphaEquivalentTo (Lambda(y, y))
+
+    Lambda(x, y) should not beAlphaEquivalentTo Lambda(y, x)
   }
 }

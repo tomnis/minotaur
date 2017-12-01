@@ -95,6 +95,13 @@ sealed trait Term {
   /** @return true iff we are in a normal form (cannot be further reduced). */
   final def isNormal: Boolean = this.reduce == this
 
+  /**
+    * Constructs a new reduced form of this [[Term]].
+    *
+    * TODO reduction order strategies.
+    *
+    * @return
+    */
   final def reduce: Term = {
     Logger.info(s"reducing $this")
     this match {
@@ -106,6 +113,9 @@ sealed trait Term {
     }
   }
 }
+
+
+
 
 
 
@@ -177,7 +187,4 @@ case class Apply(t1: Term, t2: Term) extends Term {
       Logger.error(s"we shouldn't be calling beta on $this")
       this
   }
-
-
-
 }
