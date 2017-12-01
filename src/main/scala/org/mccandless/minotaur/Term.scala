@@ -78,11 +78,10 @@ sealed trait Term {
     Logger.info(s"reducing $this")
     this match {
       case v: Var => v
-      case l: Lambda => l.eta match {
-        case Success(v: Term) => v.reduce
-        case Failure(exception) => l
-      }
-      case Apply(t1, t2) => Apply(t1.reduce, t2).beta.reduce
+      case Lambda(arg, body) => Lambda(arg, body.reduce)
+//      case Apply(t1: Var, t2: Var) =>
+      case Apply(t1: Lambda, t2: Term) => Apply(t1, t2.reduce).beta.reduce
+      case Apply(t1, t2) => Apply(t1.reduce, t2.reduce)
     }
   }
 }
