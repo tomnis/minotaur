@@ -3,6 +3,8 @@ build
 *.log
 
 *.iml
+*.ipr
+*.iws
 
 .idea
 .gradle
