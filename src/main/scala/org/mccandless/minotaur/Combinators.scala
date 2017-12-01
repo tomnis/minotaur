@@ -13,5 +13,6 @@ object Combinators {
 
   val omega: Lambda = Lambda(Var("x"), Apply(Var("x"), Var("x")))
 
+  // reduces to itself
   val Omega: Term = Apply(omega, omega)
 }

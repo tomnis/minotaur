@@ -1,5 +1,6 @@
 package org.mccandless.minotaur
 
+import org.mccandless.minotaur.types.{Context, FunctionType, Type}
 import org.pmw.tinylog.Logger
 
 import scala.util.{Failure, Success, Try}
@@ -65,6 +66,8 @@ sealed trait Term {
   /**
     * Converts to a [[DeBruijnTerm]] with De Bruijn indices as identifiers instead of raw strings.
     *
+    * This is useful for alpha-equivalence and capture-avoiding substitution.
+    *
     * @return
     */
   final def toDeBruijn: DeBruijnTerm = {
@@ -93,6 +96,7 @@ sealed trait Term {
 
 
   /** @return true iff we are in a normal form (cannot be further reduced). */
+  // TODO needs to be tested
   final def isNormal: Boolean = this.reduce == this
 
   /**
@@ -116,16 +120,27 @@ sealed trait Term {
   }
 
 
-
-
-  final def inferType(context: Context): String = {
+  /**
+    *
+    * @param context
+    * @return
+    */
+  final def inferType(context: Context): Option[Type] = {
     Logger.info(s"inferring type of $this")
 
-//    if (context.hasAssumptionFor(this)) context.getAssumption(this)
-//    else
-
-    ""
+    // if we have something already in the context, just use that
+    if (context.hasAssumptionFor(this)) Option(context.getTypeOf(this))
+    // otherwise delegate to the concrete implementation
+    else this.specializedInferType(context)
   }
+
+
+  /**
+    *
+    * @param context
+    * @return
+    */
+  protected[this] def specializedInferType(context: Context): Option[Type]
 }
 
 
@@ -141,6 +156,9 @@ sealed trait Term {
 case class Var(name: String) extends Term with Ordered[Var] {
 
   override def compare(that: Var): Int = this.name compareTo that.name
+
+  // we dont need to do anything specific here
+  override protected[this] def specializedInferType(context: Context): Option[Type] = None
 }
 
 /**
@@ -176,6 +194,14 @@ case class Lambda(arg: Var, body: Term) extends Term {
       case _ => Failure(new RuntimeException(s"eta reduction not possible for $this"))
     }
   }
+
+
+  override protected[this] def specializedInferType(context: Context): Option[Type] = {
+    for {
+      argType <- context.maybeTypeOf(this.arg)
+      bodyType <- context.maybeTypeOf(this.body)
+    } yield FunctionType(argType, bodyType)
+  }
 }
 
 
@@ -185,7 +211,6 @@ case class Lambda(arg: Var, body: Term) extends Term {
   * @param t1
   * @param t2
   */
-// TODO should t1 be a lambda?
 case class Apply(t1: Term, t2: Term) extends Term {
 
   /**
@@ -200,5 +225,14 @@ case class Apply(t1: Term, t2: Term) extends Term {
     case _ =>
       Logger.error(s"we shouldn't be calling beta on $this")
       this
+  }
+
+  override protected[this] def specializedInferType(context: Context): Option[Type] = {
+    for {
+      t2Type <- context.maybeTypeOf(this.t2)
+      t1Type <- context.maybeTypeOf(this.t1) if t1Type.isInstanceOf[FunctionType] && t1.asInstanceOf[FunctionType].domain == t2Type
+    } yield {
+      t1Type.asInstanceOf[FunctionType].codomain
+    }
   }
 }
