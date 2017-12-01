@@ -79,9 +79,9 @@ sealed trait Term {
     this match {
       case v: Var => v
       case Lambda(arg, body) => Lambda(arg, body.reduce)
-//      case Apply(t1: Var, t2: Var) =>
+      case Apply(t1: Var, t2: Var) => Apply(t1, t2)
       case Apply(t1: Lambda, t2: Term) => Apply(t1, t2.reduce).beta.reduce
-      case Apply(t1, t2) => Apply(t1.reduce, t2.reduce)
+      case Apply(t1, t2) => Apply(t1.reduce, t2.reduce).reduce
     }
   }
 }
