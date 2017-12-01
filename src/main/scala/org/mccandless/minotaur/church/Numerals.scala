@@ -25,7 +25,29 @@ object Numerals {
   )
 
 
-  def +(num1: Term, num2: Term): Term = {
-    Lambda(Var("m"), Lambda(Var("n"), Lambda(Var("f"), Lambda(Var("x"), Apply(Var("m"), Apply(Var("f"), Apply(Var("n"), Apply(Var("f"), Var("x")))))))))
+  val +  =    Lambda(Var("m"), Lambda(Var("n"), Lambda(Var("f"), Lambda(Var("x"),
+    Apply(
+      Apply(Var("m"), Var("f")),
+      Apply(
+        Apply(Var("n"), Var("f")),
+        Var("x")
+      )
+    )
+  ))))
+
+//  val + : Lambda = Lambda(Var("m"), Lambda(Var("n"), Apply(Apply(Var("m"), this.succ), Var("n"))))
+
+  def plus(num1: Term, num2: Term): Term = {
+//    Lambda(Var("m"), Lambda(Var("n"), Lambda(Var("f"), Lambda(Var("x"),
+//      Apply(
+//        Apply(Var("m"), Var("f")),
+//        Apply(
+//          Apply(Var("n"), Var("f")),
+//          Var("x")
+//        )
+//      )
+//    ))))
+
+    Apply(Apply(this.+, num1), num2)
   }
 }

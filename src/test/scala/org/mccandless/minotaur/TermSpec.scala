@@ -84,6 +84,13 @@ class TermSpec extends JUnitSuite with Matchers with TermMatchers {
 
 
   @Test
+  def reduction(): Unit = {
+    val t: Term = Apply(Apply(Var("n"), Var("f")), Var("x"))
+    t.reduce
+  }
+
+
+  @Test
   def alphaEquivalence(): Unit = {
     x should beAlphaEquivalentTo (x)
     x should not beAlphaEquivalentTo y

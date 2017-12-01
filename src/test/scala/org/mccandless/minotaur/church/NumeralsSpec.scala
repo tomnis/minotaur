@@ -12,17 +12,21 @@ import org.scalatest.junit.JUnitSuite
 class NumeralsSpec extends JUnitSuite with Matchers with TermMatchers {
 
 
+  /** Checks that we can apply the successor function. */
   @Test
   def succSpec(): Unit = {
     Apply(succ, zero).reduce should beAlphaEquivalentTo (one)
+    Apply(succ, one).reduce should beAlphaEquivalentTo (two)
+    Apply(succ, two).reduce should beAlphaEquivalentTo (three)
   }
 
 
   @Test
-  @Ignore
   def add(): Unit = {
 
-    Numerals.+(zero, one) should be (one)
-    Numerals.+(one, one) should be (two)
+    Numerals.plus(zero, one).reduce should beAlphaEquivalentTo (one)
+    Numerals.plus(one, one).reduce should beAlphaEquivalentTo (two)
+//
+    Numerals.plus(one, two).reduce should beAlphaEquivalentTo (three)
   }
 }
