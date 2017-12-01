@@ -8,9 +8,9 @@ In terms of computational power, lambda calculus and Turing machines are equival
 In other words, any computation can be represented in either model.
 
 There is a beauty in the sparse simplicity of the syntax. Every term in the language is either
-- a variable: x
-- a function definition (lambda abstraction): (λx.M)
-- a function application: (M N)
+- a variable: `x`
+- a function definition (lambda abstraction): `λx.M`
+- a function application: `(M N)`
 
 Everything is a function. 
 
