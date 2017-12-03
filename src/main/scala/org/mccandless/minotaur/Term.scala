@@ -107,7 +107,7 @@ sealed trait Term {
     * @return
     */
   final def reduce: Term = {
-    Logger.info(s"reducing $this")
+//    Logger.info(s"reducing $this")
     val tPrime = this match {
       case v: Var => v
       case Lambda(arg, body) => Lambda(arg, body.reduce)
@@ -229,8 +229,8 @@ case class Apply(t1: Term, t2: Term) extends Term {
 
   override protected[this] def specializedInferType(context: Context): Option[Type] = {
     for {
-      t2Type <- context.maybeTypeOf(this.t2)
-      t1Type <- context.maybeTypeOf(this.t1) if t1Type.isInstanceOf[FunctionType] && t1.asInstanceOf[FunctionType].domain == t2Type
+      t2Type: Type <- t2.inferType(context)
+      t1Type: Type <- t1.inferType(context) if t1Type.isInstanceOf[FunctionType] && t1Type.asInstanceOf[FunctionType].domain == t2Type
     } yield {
       t1Type.asInstanceOf[FunctionType].codomain
     }
