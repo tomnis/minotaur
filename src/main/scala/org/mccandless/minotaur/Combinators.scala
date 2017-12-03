@@ -7,12 +7,9 @@ import org.mccandless.minotaur.church.Booleans
   */
 object Combinators {
 
-  val id: Lambda = Lambda(Var("x"), Var("x"))
+  val id: Term = Lambda(Var("x"), Var("x"))
 
-  val k: Lambda = Booleans.tru
+  val k: Term = Booleans.tru
 
-  val omega: Lambda = Lambda(Var("x"), Apply(Var("x"), Var("x")))
-
-  // reduces to itself
-  val Omega: Term = Apply(omega, omega)
+  val omega: Term = Lambda(Var("x"), Apply(Var("x"), Var("x")))
 }

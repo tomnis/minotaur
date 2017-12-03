@@ -1,14 +1,12 @@
 package org.mccandless.minotaur.types
 
 import org.junit.Test
-import org.mccandless.minotaur.{Apply, Lambda, Var}
-import org.scalatest.Matchers
-import org.scalatest.junit.JUnitSuite
+import org.mccandless.minotaur.{Apply, BaseSpec, Lambda, Var}
 
 /**
   * Created by tomas.mccandless on 11/30/17.
   */
-class TypeSpec extends JUnitSuite with Matchers {
+class TypeSpec extends BaseSpec {
 
   val x = Var("x")
   val y = Var("y")

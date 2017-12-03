@@ -2,13 +2,11 @@ package org.mccandless.minotaur
 
 import Combinators._
 import org.junit.{Ignore, Test}
-import org.scalatest.Matchers
-import org.scalatest.junit.JUnitSuite
 
 /**
   * Created by tomas.mccandless on 7/13/17.
   */
-class TermSpec extends JUnitSuite with Matchers with TermMatchers {
+class TermSpec extends BaseSpec {
 
   val x = Var("x")
   val y = Var("y")
@@ -49,7 +47,8 @@ class TermSpec extends JUnitSuite with Matchers with TermMatchers {
 
   @Test
   def alpha(): Unit = {
-    id.alpha should be (Lambda(Var("x'"), Var("x'")))
+    // TODO maybe we should move alpha to the base trait
+    id.asInstanceOf[Lambda].alpha should be (Lambda(Var("x'"), Var("x'")))
   }
 
 

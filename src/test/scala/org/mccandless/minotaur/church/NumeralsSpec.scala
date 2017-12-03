@@ -1,15 +1,13 @@
 package org.mccandless.minotaur.church
 
 import org.junit.Test
-import org.mccandless.minotaur.TermMatchers
+import org.mccandless.minotaur.BaseSpec
 import org.mccandless.minotaur.church.Numerals._
-import org.scalatest.Matchers
-import org.scalatest.junit.JUnitSuite
 
 /**
   * Created by ergo on 7/16/17.
   */
-class NumeralsSpec extends JUnitSuite with Matchers with TermMatchers {
+class NumeralsSpec extends BaseSpec {
 
 
   /** Checks that we can apply the successor function. */
