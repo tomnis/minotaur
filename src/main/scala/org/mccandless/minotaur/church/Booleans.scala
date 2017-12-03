@@ -7,6 +7,6 @@ import org.mccandless.minotaur.{Lambda, Term, Var}
   */
 object Booleans {
 
-  val tru: Lambda = Lambda(Var("true"), Lambda(Var("false"), Var("true")))
-  val fls: Lambda = Lambda(Var("true"), Lambda(Var("false"), Var("false")))
+  val tru: Term = Lambda(Var("x"), Lambda(Var("y"), Var("x")))
+  val fls: Term = Lambda(Var("x"), Lambda(Var("y"), Var("y")))
 }

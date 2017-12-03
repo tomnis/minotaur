@@ -1,7 +1,7 @@
 package org.mccandless.minotaur.church
 
 import org.junit.Test
-import org.mccandless.minotaur.{Apply, TermMatchers}
+import org.mccandless.minotaur.TermMatchers
 import org.mccandless.minotaur.church.Numerals._
 import org.scalatest.Matchers
 import org.scalatest.junit.JUnitSuite
@@ -15,17 +15,18 @@ class NumeralsSpec extends JUnitSuite with Matchers with TermMatchers {
   /** Checks that we can apply the successor function. */
   @Test
   def succSpec(): Unit = {
-    Apply(succ, zero).reduce should beAlphaEquivalentTo (one)
-    Apply(succ, one).reduce should beAlphaEquivalentTo (two)
-    Apply(succ, two).reduce should beAlphaEquivalentTo (three)
+    succ(zero) should beAlphaEquivalentTo (one)
+    succ(one) should beAlphaEquivalentTo (two)
+    succ(two) should beAlphaEquivalentTo (three)
+    succ(three) should beAlphaEquivalentTo (four)
   }
 
 
   @Test
   def add(): Unit = {
 
-    Numerals.plus(zero, one).reduce should beAlphaEquivalentTo (one)
-    Numerals.plus(one, one).reduce should beAlphaEquivalentTo (two)
-    Numerals.plus(one, two).reduce should beAlphaEquivalentTo (three)
+    one + one should beAlphaEquivalentTo (two)
+    one + two should beAlphaEquivalentTo (three)
+    two + two should beAlphaEquivalentTo (four)
   }
 }

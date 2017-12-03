@@ -16,6 +16,7 @@ trait TermMatchers {
     }
   }
 
+  // TODO think about some nicer syntax here. =𝛂= ?
   def beAlphaEquivalentTo(expectedTerm: Term) = new AlphaEquivalenceMatcher(expectedTerm)
 
 
