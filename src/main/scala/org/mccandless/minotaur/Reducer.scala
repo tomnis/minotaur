@@ -58,7 +58,7 @@ trait CallByNameReducer extends Reducer {
 object CallByValue extends Reducer {
 
   override def apply(expr: Term): Term = {
-    Logger.info(s"reducing $expr")
+//    Logger.info(s"reducing $expr")
 
     val exprPrime: Term = expr match {
       case v: Var => v

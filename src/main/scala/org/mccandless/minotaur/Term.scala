@@ -201,6 +201,10 @@ case class Lambda(arg: Var, body: Term) extends Term {
   }
 }
 
+object Lambda {
+  def apply(arg: String, body: String): Lambda = Lambda(Var(arg), Var(body))
+  def apply(arg: String, body: Term): Lambda = Lambda(Var(arg), body)
+}
 
 /**
   * Term application
@@ -232,4 +236,10 @@ case class Apply(t1: Term, t2: Term) extends Term {
       t1Type.asInstanceOf[FunctionType].codomain
     }
   }
+}
+
+object Apply {
+  def apply(t1: String, t2: String): Apply = Apply(Var(t1), Var(t2))
+  def apply(t1: String, t2: Term): Apply = Apply(Var(t1), t2)
+  def apply(t1: Term, t2: String): Apply = Apply(t1, Var(t2))
 }
