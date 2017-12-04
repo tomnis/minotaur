@@ -17,12 +17,22 @@ object Numerals {
   val four: Term = Lambda(Var("x"), Lambda(Var("y"), Apply(Var("x"),Apply(Var("x"), Apply(Var("x"), Apply(Var("x"), Var("y")))))))
 
 
+  // allows use of arithmetic as infix operators on terms
+  implicit class Arithmetic(val n: Term) extends ArithmeticOperators
+
+  object succ extends ArithmeticExpressions {
+    def apply(n: Term): Term = Apply(succExpr, n).reduce
+  }
+}
+
+
+private[church] trait ArithmeticExpressions {
   /**
     * The successor expression.
     *
     * Applies f n times, then applies f one more time.
     */
-  val succ: Term = Lambda(Var("n"),
+  val succExpr: Term = Lambda(Var("n"),
     Lambda(Var("f"),
       Lambda(Var("x"),
         Apply(Var("f"),
@@ -33,19 +43,11 @@ object Numerals {
   )
 
   /**
-    * Applies the successor function ([[succ]]) to `term`.
-    *
-    * @param term number to be incremented.
-    * @return the successor of `term`.
-    */
-  def succ(term: Term): Term = Apply(succ, term).reduce
-
-  /**
     * The addition expression.
     *
     * Applies f n times, then m more times.
     */
-  val + : Term = Lambda(Var("m"), Lambda(Var("n"), Lambda(Var("f"), Lambda(Var("x"),
+  val addExpr : Term = Lambda(Var("m"), Lambda(Var("n"), Lambda(Var("f"), Lambda(Var("x"),
     Apply(
       Apply(Var("m"), Var("f")),
       Apply(
@@ -54,20 +56,15 @@ object Numerals {
       )
     )
   ))))
-
-
-  // allows use of arithmetic as infix operators on terms
-  implicit class ChurchArithmetic(val term: Term) extends ArithmeticOperators
 }
 
 
+private[church] trait ArithmeticOperators extends ArithmeticExpressions {
 
-trait ArithmeticOperators {
+  val n: Term
 
-  val term: Term
-
-  def +(that: Term): Term = Apply(Apply(Numerals.+, this.term), that).reduce
-  def -(that: Term): Term = ???
-  def *(that: Term): Term = ???
-  def /(that: Term): Term = ???
+  def +(m: Term): Term = Apply(Apply(addExpr, n), m).reduce
+  def -(m: Term): Term = ???
+  def *(m: Term): Term = ???
+  def /(m: Term): Term = ???
 }

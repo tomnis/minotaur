@@ -5,11 +5,32 @@ import org.scalatest.words.ResultOfNotWordForAny
 
 trait TermMatchers {
 
+  /**
+    * Matches when the left (actual value) is a [[Term]].
+    * @param expectedTerm
+    */
   class AlphaEquivalenceMatcher(expectedTerm: Term) extends Matcher[Term] {
 
     override def apply(left: Term) = {
       MatchResult(
         left.isAlphaEquivalentTo(expectedTerm),
+        s"""$left was not alpha-equivalent to $expectedTerm""",
+        s"""$left was alpha-equivalent to $expectedTerm"""
+      )
+    }
+  }
+
+
+  /**
+    * Matches when the left (actual value) is a [[DeBruijnTerm]].
+    *
+    * @param expectedTerm
+    */
+  class DeBruijnAlphaEquivalenceMatcher(expectedTerm: Term) extends Matcher[DeBruijnTerm] {
+
+    override def apply(left: DeBruijnTerm) = {
+      MatchResult(
+        left == expectedTerm.toDeBruijn,
         s"""$left was not alpha-equivalent to $expectedTerm""",
         s"""$left was alpha-equivalent to $expectedTerm"""
       )

@@ -169,6 +169,7 @@ case class Var(name: String) extends Term with Ordered[Var] {
   */
 // An occurrence of the variable arg is said to be bound when it occurs in the body body of an abstraction λ arg.body
 // An occurrence of arg is free if it appears in a position where it is not bound by an enclosing abstraction on arg
+// TODO consider adding an alternate constructor to represent the short syntax form of construction, id \xyz...
 case class Lambda(arg: Var, body: Term) extends Term {
 
   /**
