@@ -20,7 +20,7 @@ sealed trait DeBruijnTerm {
     * @param that
     * @return
     */
-  def isAlphaEquivalentTo(that: DeBruijnTerm) = this == that
+  def isAlphaEquivalentTo(that: DeBruijnTerm): Boolean = this == that
 }
 
 case class DeBruijnVar(index: Int) extends DeBruijnTerm

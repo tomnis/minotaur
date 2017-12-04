@@ -23,8 +23,19 @@ sealed trait Term {
     case Apply(t1, t2) => t1.freeVars union t2.freeVars
   }
 
+  final def vars: Set[Var] = this match {
+    case v: Var => Set(v)
+    case Lambda(arg, body) => arg.vars union body.vars
+    case Apply(t1, t2) => t1.vars union t2.vars
+  }
+
+  final def boundVars: Set[Var] = this.vars -- this.freeVars
+
+
   /**
-    * Variable substitution.
+    * Variable substitution in a capture-avoiding manner.
+    *
+    *
     *
     * @param old
     * @param newTerm
@@ -32,10 +43,16 @@ sealed trait Term {
     */
   final def replace(old: Var, newTerm: Term): Term = this match {
     case v: Var if v == old => newTerm
+    case v: Var if v != old => this
     case Lambda(arg, body) if arg != old =>
-      if (!newTerm.freeVars.contains(arg)) Lambda(arg, body.replace(old, newTerm))
-        // TODO likely bug here. do we ever need to make the arg itself fresh?
-      else Lambda(arg, newTerm.replace(arg, newTerm.freshVar))
+      if (!newTerm.freeVars.contains(arg))
+        Lambda(arg, body.replace(old, newTerm))
+      else {
+        val newArg: Var = body.vars.union(newTerm.freeVars).max.freshVar
+        // TODO this makes multiple traversals, could be optimized
+        val newBody: Term = body.replace(arg, newArg).replace(old, newTerm)
+        Lambda(newArg, newBody)
+      }
     case Apply(t1, t2) => Apply(t1.replace(old, newTerm), t2.replace(old, newTerm))
     case _ => this
   }
@@ -107,7 +124,7 @@ sealed trait Term {
     * @return
     */
   final def reduce: Term = {
-//    Logger.info(s"reducing $this")
+    Logger.info(s"reducing $this")
     val tPrime = this match {
       case v: Var => v
       case Lambda(arg, body) => Lambda(arg, body.reduce)
@@ -179,6 +196,7 @@ case class Lambda(arg: Var, body: Term) extends Term {
     */
   // TODO should we move this to the base trait?
   def alpha: Lambda = {
+
     val nextFreeVar: Var = this.freshVar
     require(!body.freeVars.contains(nextFreeVar))
     Lambda(nextFreeVar, this.body.replace(this.arg, nextFreeVar))
