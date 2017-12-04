@@ -3,6 +3,7 @@ package org.mccandless.minotaur.church
 import org.junit.Test
 import org.mccandless.minotaur.{CallByValue, TermMatchers}
 import org.mccandless.minotaur.church.Booleans._
+import org.mccandless.minotaur.church.Numerals._
 import org.scalatest.Matchers._
 import org.scalatest.junit.JUnitSuite
 
@@ -45,5 +46,28 @@ class BooleansSpec extends JUnitSuite with TermMatchers with CallByValue {
 
     !tru should beAlphaEquivalentTo (fls)
     !fls should beAlphaEquivalentTo (tru)
+  }
+
+
+  @Test
+  def lessThanOrEqual(): Unit = {
+    zero <= zero should beAlphaEquivalentTo(tru)
+
+    one <= zero should beAlphaEquivalentTo(fls)
+
+    zero <= four should beAlphaEquivalentTo(tru)
+
+    four <= four should beAlphaEquivalentTo(tru)
+  }
+
+
+  @Test
+  def ifThenElseSpec(): Unit = {
+
+    import org.mccandless.minotaur.Combinators.omega
+
+    ifThenElse(tru, four, zero) should beAlphaEquivalentTo(four)
+
+    ifThenElse(fls, four, omega) should beAlphaEquivalentTo(omega)
   }
 }
