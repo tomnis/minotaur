@@ -1,5 +1,6 @@
 package org.mccandless.minotaur
 
+import org.mccandless.minotaur.utils.Memoizer
 import org.pmw.tinylog.Logger
 
 /**
@@ -57,8 +58,11 @@ trait CallByNameReducer extends Reducer {
   */
 object CallByValue extends Reducer {
 
-  override def apply(expr: Term): Term = {
-//    Logger.info(s"reducing $expr")
+  private[this] val memoizer: Memoizer[Term, Term] = new Memoizer
+  private[this] val memoizedReduce: Term => Term = this.memoizer.memoize(this.reduce)
+
+  def reduce(expr: Term): Term = {
+    Logger.info(s"reducing $expr")
 
     val exprPrime: Term = expr match {
       case v: Var => v
@@ -69,4 +73,13 @@ object CallByValue extends Reducer {
 
     if (expr isAlphaEquivalentTo exprPrime) exprPrime else this(exprPrime)
   }
+
+
+  /**
+    * We implement a memoized form of evaluation for efficiency.
+    *
+    * @param expr
+    * @return
+    */
+  override def apply(expr: Term) = this.memoizedReduce(expr)
 }

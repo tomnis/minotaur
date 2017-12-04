@@ -1,6 +1,6 @@
 package org.mccandless.minotaur.church
 
-import org.junit.Test
+import org.junit.{Ignore, Test}
 import org.mccandless.minotaur.BaseSpec
 import org.mccandless.minotaur.church.Numerals._
 
@@ -62,5 +62,12 @@ class NumeralsSpec extends BaseSpec {
     one ** four should beAlphaEquivalentTo(one)
     two ** two should beAlphaEquivalentTo(four)
     four ** one should beAlphaEquivalentTo(four)
+  }
+
+
+  @Test
+  @Ignore
+  def factorial(): Unit = {
+    fact(one) should beAlphaEquivalentTo(one)
   }
 }

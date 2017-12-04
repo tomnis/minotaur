@@ -1,5 +1,6 @@
 package org.mccandless.minotaur.church
 
+import org.mccandless.minotaur.church.Booleans.isZero
 import org.mccandless.minotaur.{Lambda, _}
 
 /**
@@ -27,10 +28,14 @@ object Numerals {
   object pred extends ArithmeticExpressions {
     def apply(n: Term)(implicit r: Reducer): Term = r(Apply(predExpr, n))
   }
+
+  object fact extends ArithmeticExpressions with ControlExpressions {
+    def apply(n: Term)(implicit r: Reducer): Term = r(Apply(Apply(yExpr, factExpr), n))
+  }
 }
 
 
-private[church] trait ArithmeticExpressions {
+trait ArithmeticExpressions extends BooleanExpressions {
 
   /**
     * The successor expression.
@@ -101,10 +106,44 @@ private[church] trait ArithmeticExpressions {
   val divideExpr: Term = succExpr
 
   val powExpr: Term = Lambda("b", Lambda("e", Apply("e", "b")))
+
+
+  /**
+    * λr. λn.(1, if n = 0; else n × (r r (n−1)))
+    */
+  val factExpr: Term = {
+    Lambda("r", Lambda("n", Apply(
+      Apply(
+        Apply(
+          ifThenElseExpr,
+          Apply(isZeroExpr, "n")
+        ),
+        Numerals.one
+      ),
+      Apply(
+        Apply(
+          multExpr,
+          "n"
+        ),
+        Apply(
+          Apply(
+            "r",
+            "r"
+          ),
+          Apply(
+            predExpr,
+            "n"
+          )
+        )
+      )
+    )))
+  }
 }
 
+object ArithmeticExpressions extends ArithmeticExpressions
 
-private[church] trait ArithmeticOperators extends ArithmeticExpressions {
+
+trait ArithmeticOperators extends ArithmeticExpressions {
 
   val n: Term
 

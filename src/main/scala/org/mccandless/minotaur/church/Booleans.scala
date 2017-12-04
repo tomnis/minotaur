@@ -14,23 +14,25 @@ object Booleans {
 
   implicit class BooleanAlgebra(val x: Term) extends Operators
 
-  object not extends Expressions {
+  object not extends BooleanExpressions {
     def apply(x: Term)(implicit r: Reducer): Term = r(Apply(notExpr, x))
   }
 
-  object isZero extends Expressions {
+  object isZero extends BooleanExpressions {
     def apply(x: Term)(implicit r: Reducer): Term = ???
   }
 
   // TODO might want to move to control object instead of boolean
-  object ifThenElse extends Expressions {
+  object ifThenElse extends BooleanExpressions {
     def apply(p: Term, a: Term, b: Term)(implicit r: Reducer): Term = r(Apply(Apply(Apply(ifThenElseExpr, p), a), b))
   }
 }
 
 
 
-private[church] trait Expressions extends ArithmeticExpressions {
+trait BooleanExpressions {
+
+  import ArithmeticExpressions.subtractExpr
 
   val andExpr: Term = Lambda(Var("x"), Lambda(Var("y"), Apply(Apply(Var("x"), Var("y")), Var("x"))))
   val orExpr: Term = Lambda(Var("x"), Lambda(Var("y"), Apply(Apply(Var("x"), Var("x")), Var("y"))))
@@ -58,8 +60,11 @@ private[church] trait Expressions extends ArithmeticExpressions {
   val ifThenElseExpr: Term = Lambda("p", Lambda("a", Lambda("b", Apply(Apply("p", "a"), "b"))))
 }
 
+object BooleanExpressions extends BooleanExpressions
 
-private[church] trait Operators extends Expressions {
+
+
+trait Operators extends BooleanExpressions {
 
   protected val x: Term
 
