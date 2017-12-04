@@ -1,6 +1,6 @@
 package org.mccandless.minotaur.church
 
-import org.mccandless.minotaur.{Apply, Lambda, Term, Var}
+import org.mccandless.minotaur._
 
 /**
   * Church encodings for natural numbers.
@@ -21,7 +21,7 @@ object Numerals {
   implicit class Arithmetic(val n: Term) extends ArithmeticOperators
 
   object succ extends ArithmeticExpressions {
-    def apply(n: Term): Term = Apply(succExpr, n).reduce
+    def apply(n: Term)(implicit r: Reducer): Term = r(Apply(succExpr, n))
   }
 }
 
@@ -63,8 +63,8 @@ private[church] trait ArithmeticOperators extends ArithmeticExpressions {
 
   val n: Term
 
-  def +(m: Term): Term = Apply(Apply(addExpr, n), m).reduce
-  def -(m: Term): Term = ???
-  def *(m: Term): Term = ???
-  def /(m: Term): Term = ???
+  def +(m: Term)(implicit r: Reducer): Term = r(Apply(Apply(addExpr, n), m))
+  def -(m: Term)(implicit r: Reducer): Term = ???
+  def *(m: Term)(implicit r: Reducer): Term = ???
+  def /(m: Term)(implicit r: Reducer): Term = ???
 }

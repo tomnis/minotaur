@@ -35,15 +35,18 @@ sealed trait Term {
   /**
     * Variable substitution in a capture-avoiding manner.
     *
+    * Abstractions are renamed when their arguments appear free in `newterm`.
     *
+    * A new lambda abstraction is created as follows:
+    *   - pick a new argument name that is fresh wrt to both the body and `newTerm`.
+    *   - pick a new body that is the result of replacing the current arg with the new arg, and `old` with `newTerm`.
     *
     * @param old
     * @param newTerm
     * @return
     */
   final def replace(old: Var, newTerm: Term): Term = this match {
-    case v: Var if v == old => newTerm
-    case v: Var if v != old => this
+    case v: Var => if (v == old) newTerm else this
     case Lambda(arg, body) if arg != old =>
       if (!newTerm.freeVars.contains(arg))
         Lambda(arg, body.replace(old, newTerm))
@@ -109,31 +112,6 @@ sealed trait Term {
     */
   final def isAlphaEquivalentTo(that: Term): Boolean = {
     this.toDeBruijn == that.toDeBruijn
-  }
-
-
-  /** @return true iff we are in a normal form (cannot be further reduced). */
-  // TODO needs to be tested
-  final def isNormal: Boolean = this.reduce == this
-
-  /**
-    * Constructs a new reduced form of this [[Term]].
-    *
-    * TODO reduction order strategies.
-    *
-    * @return
-    */
-  final def reduce: Term = {
-    Logger.info(s"reducing $this")
-    val tPrime = this match {
-      case v: Var => v
-      case Lambda(arg, body) => Lambda(arg, body.reduce)
-      case Apply(t1: Lambda, t2: Term) => Apply(t1, t2.reduce).beta
-      case Apply(t1, t2) => Apply(t1.reduce, t2.reduce)
-    }
-
-    if (this.isAlphaEquivalentTo(tPrime)) tPrime
-    else tPrime.reduce
   }
 
 

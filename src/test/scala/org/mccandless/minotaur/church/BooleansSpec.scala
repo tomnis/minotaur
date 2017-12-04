@@ -1,7 +1,7 @@
 package org.mccandless.minotaur.church
 
 import org.junit.Test
-import org.mccandless.minotaur.TermMatchers
+import org.mccandless.minotaur.{CallByValue, TermMatchers}
 import org.mccandless.minotaur.church.Booleans._
 import org.scalatest.Matchers._
 import org.scalatest.junit.JUnitSuite
@@ -13,7 +13,7 @@ import org.scalatest.junit.JUnitSuite
   *
   * Created by tdm on 12/3/17.
   */
-class BooleansSpec extends JUnitSuite with TermMatchers {
+class BooleansSpec extends JUnitSuite with TermMatchers with CallByValue {
 
 
   @Test

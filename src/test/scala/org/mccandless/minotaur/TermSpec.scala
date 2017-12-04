@@ -79,14 +79,6 @@ class TermSpec extends BaseSpec {
     id.toString should be ("λx.x")
   }
 
-
-  @Test
-  def reduction(): Unit = {
-    val t: Term = Apply(Apply(Var("n"), Var("f")), Var("x"))
-    t.reduce
-  }
-
-
   @Test
   def alphaEquivalence(): Unit = {
     x should beAlphaEquivalentTo (x)
